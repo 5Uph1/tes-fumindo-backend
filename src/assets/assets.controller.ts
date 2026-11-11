@@ -2,7 +2,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -164,5 +167,13 @@ export class AssetsController {
     }
 
     return this.assetsService.update(assetId, changes);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param('id') id: string): Promise<void> {
+    const assetId = this.parsePositiveInteger(id, 'id');
+
+    await this.assetsService.delete(assetId);
   }
 }

@@ -10,6 +10,7 @@ export class AssetsService {
     private readonly assetRepository: Repository<Asset>,
   ) {}
 
+  // Get all data
   async findAll(search: string, page: number, limit: number) {
     const keyword = search.trim();
 
@@ -29,6 +30,7 @@ export class AssetsService {
     };
   }
 
+  // Get data asset by id
   async findOne(id: number) {
     const asset = await this.assetRepository.findOneBy({
       asset_id: id,
@@ -41,6 +43,7 @@ export class AssetsService {
     return asset;
   }
 
+  // create data
   async create(input: {
     asset_name: string;
     stock_quantity?: number;
@@ -51,6 +54,7 @@ export class AssetsService {
     return this.assetRepository.save(asset);
   }
 
+  // update data
   async update(
     id: number,
     input: {
@@ -64,5 +68,16 @@ export class AssetsService {
     Object.assign(asset, input);
 
     return this.assetRepository.save(asset);
+  }
+
+  // delete data by id
+  async delete(id: number): Promise<void> {
+    const result = await this.assetRepository.delete({
+      asset_id: id,
+    });
+
+    if (result.affected === 0) {
+      throw new NotFoundException('Aset tidak ditemukan');
+    }
   }
 }
