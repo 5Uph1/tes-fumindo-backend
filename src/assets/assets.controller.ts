@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -97,5 +98,71 @@ export class AssetsController {
       category: input.category,
       ...(stock !== undefined ? { stock_quantity: stock } : {}),
     });
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() body: unknown) {
+    const assetId = this.parsePositiveInteger(id, 'id');
+
+    if (typeof body !== 'object' || body === null || Array.isArray(body)) {
+      throw new BadRequestException('Body harus berupa object JSON');
+    }
+
+    const input = body as Record<string, unknown>;
+
+    const changes: {
+      asset_name?: string;
+      stock_quantity?: number;
+      category?: AssetCategory;
+    } = {};
+
+    if ('asset_name' in input) {
+      if (
+        typeof input.asset_name !== 'string' ||
+        input.asset_name.trim().length === 0
+      ) {
+        throw new BadRequestException('asset_name tidak boleh kosong');
+      }
+
+      changes.asset_name = input.asset_name.trim();
+    }
+
+    if ('stock_quantity' in input) {
+      const stock = input.stock_quantity;
+
+      if (
+        typeof stock !== 'number' ||
+        !Number.isInteger(stock) ||
+        stock < 0 ||
+        stock > 2147483647
+      ) {
+        throw new BadRequestException(
+          'stock_quantity harus integer antara 0 dan 2147483647',
+        );
+      }
+
+      changes.stock_quantity = stock;
+    }
+
+    if ('category' in input) {
+      if (
+        input.category !== AssetCategory.Consumable &&
+        input.category !== AssetCategory.NonConsumable
+      ) {
+        throw new BadRequestException(
+          'category harus Consumable atau Non-Consumable',
+        );
+      }
+
+      changes.category = input.category;
+    }
+
+    if (Object.keys(changes).length === 0) {
+      throw new BadRequestException(
+        'Kirim minimal satu field: asset_name, stock_quantity, atau category',
+      );
+    }
+
+    return this.assetsService.update(assetId, changes);
   }
 }

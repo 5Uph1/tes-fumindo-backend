@@ -15,7 +15,7 @@ export class AssetsService {
 
     const [data, total] = await this.assetRepository.findAndCount({
       where: keyword ? { asset_name: ILike(`%${keyword}%`) } : {},
-      order: { asset_id: 'DESC' },
+      order: { asset_id: 'ASC' },
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -47,6 +47,21 @@ export class AssetsService {
     category: AssetCategory;
   }) {
     const asset = this.assetRepository.create(input);
+
+    return this.assetRepository.save(asset);
+  }
+
+  async update(
+    id: number,
+    input: {
+      asset_name?: string;
+      stock_quantity?: number;
+      category?: AssetCategory;
+    },
+  ) {
+    const asset = await this.findOne(id);
+
+    Object.assign(asset, input);
 
     return this.assetRepository.save(asset);
   }
