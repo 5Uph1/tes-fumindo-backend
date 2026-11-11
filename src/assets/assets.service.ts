@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
-import { Asset } from './asset.entity.js';
+import { Asset, AssetCategory } from './asset.entity.js';
 
 @Injectable()
 export class AssetsService {
@@ -39,5 +39,15 @@ export class AssetsService {
     }
 
     return asset;
+  }
+
+  async create(input: {
+    asset_name: string;
+    stock_quantity?: number;
+    category: AssetCategory;
+  }) {
+    const asset = this.assetRepository.create(input);
+
+    return this.assetRepository.save(asset);
   }
 }
