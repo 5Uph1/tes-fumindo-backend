@@ -1,4 +1,4 @@
-﻿# Fumindo Backend
+﻿# Test Backend
 
 API pengelolaan aset menggunakan NestJS dan PostgreSQL.
 
