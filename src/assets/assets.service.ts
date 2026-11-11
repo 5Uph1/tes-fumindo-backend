@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { Asset } from './asset.entity.js';
@@ -27,5 +27,17 @@ export class AssetsService {
       total,
       totalPages: Math.ceil(total / limit),
     };
+  }
+
+  async findOne(id: number) {
+    const asset = await this.assetRepository.findOneBy({
+      asset_id: id,
+    });
+
+    if (!asset) {
+      throw new NotFoundException('Aset tidak ditemukan');
+    }
+
+    return asset;
   }
 }

@@ -2,8 +2,10 @@ import {
   BadRequestException,
   Controller,
   Get,
+  Param,
   Query,
 } from '@nestjs/common';
+
 import { AssetsService } from './assets.service.js';
 
 @Controller('api/assets')
@@ -42,5 +44,12 @@ export class AssetsController {
     }
 
     return number;
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    const assetId = this.parsePositiveInteger(id, 'id');
+
+    return this.assetsService.findOne(assetId);
   }
 }
